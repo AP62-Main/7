@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SECT07 - Protocol</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Space Mono', monospace;
+      background-color: #000000;
+      color: #ffffff;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #333;
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 400;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    nav a:hover {
+      color: #ff0000;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #ff0000;
+      transition: width 0.3s;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .about-container {
+      padding-top: 100px;
+      min-height: 100vh;
+    }
+    .hero-section {
+      height: 60vh;
+      /* background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assests/_ (17).jpeg'); */
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: -1;
+    }
+    .hero-content h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 4rem;
+      color: #ff0000;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #ff0000;
+      letter-spacing: 5px;
+    }
+    .hero-content p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.8;
+      color: #ccc;
+      font-family: 'Space Mono', monospace;
+    }
+    .story-section {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem;
+      color: #ff0000;
+      text-align: center;
+      margin-bottom: 60px;
+      text-shadow: 0 0 10px #ff0000;
+      letter-spacing: 3px;
+    }
+    .story-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .story-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #ccc;
+      font-family: 'Space Mono', monospace;
+    }
+    .story-text h3 {
+      font-family: 'Orbitron', monospace;
+      color: #ff0000;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    .story-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 0;
+      filter: grayscale(50%);
+    }
+    .values-section {
+      padding: 80px 40px;
+      background: #111;
+    }
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .value-card {
+      text-align: center;
+      padding: 40px 20px;
+      background: #000;
+      border-radius: 0;
+      border: 1px solid #333;
+    }
+    .value-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    .value-card h3 {
+      font-family: 'Orbitron', monospace;
+      color: #ff0000;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    .value-card p {
+      color: #999;
+      line-height: 1.6;
+      font-family: 'Space Mono', monospace;
+    }
+    .team-section {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+    }
+    .team-member {
+      text-align: center;
+      background: #111;
+      border-radius: 0;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+    .team-photo {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      filter: grayscale(50%);
+    }
+    .team-info {
+      padding: 25px;
+    }
+    .team-info h3 {
+      font-family: 'Orbitron', monospace;
+      color: #ff0000;
+      margin-bottom: 10px;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    .team-info p {
+      color: #999;
+      font-size: 0.9rem;
+      font-family: 'Space Mono', monospace;
+    }
+    .stats-section {
+      padding: 80px 40px;
+      background: #000;
+      text-align: center;
+      border-top: 1px solid #333;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .stat-item h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem;
+      color: #ff0000;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    .stat-item p {
+      color: #999;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Space Mono', monospace;
+    }
+    .cart-count {
+      background: #ff0000;
+      color: #000;
+      border-radius: 0;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 5px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        padding: 10px 10px;
+      }
+      .logo {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      nav ul {
+        gap: 10px;
+      }
+      .about-container {
+        padding-top: 60px;
+      }
+      .hero-section {
+        height: 40vh;
+        min-height: 220px;
+      }
+      .hero-content h1 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+      .hero-content p {
+        font-size: 0.95rem;
+        margin: 10px 0 20px;
+        max-width: 95vw;
+      }
+      .story-section, .values-section, .team-section, .stats-section {
+        padding: 30px 5vw;
+      }
+      .section-title {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+      }
+      .story-content, .values-grid, .team-grid, .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .story-image, .team-photo {
+        height: 180px;
+      }
+      .value-card, .team-member, .stat-item {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SECT07</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">ACCESS</a></li>
+        <li><a href="shop.html">DROPS</a></li>
+        <li><a href="about.html">PROTOCOL</a></li>
+        <li><a href="contact.html">TRANSMISSION</a></li>
+        <li><a href="cart.html">INVENTORY <span class="cart-count" id="cartCount">0</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="about-container">
+    <section class="hero-section">
+      <video class="hero-video" autoplay muted loop playsinline>
+        <source src="e4ac286094b2356074953fe0a38c8ce4_720w.mp4" type="video/mp4">
+      </video>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1>PROTOCOL</h1>
+        <p>You weren't meant to find us. You weren't supposed to wear it.</p>
+      </div>
+    </section>
+
+    <section class="story-section">
+      <h2 class="section-title">THE SECT</h2>
+      <div class="story-content">
+        <div class="story-text">
+          <h3>ORIGINS</h3>
+          <p>SECT07 emerged from the digital underground, a collective of outsiders who rejected the mainstream fashion system. We are not a brand — we are a movement. A code passed through encrypted channels, stitched in secrecy, worn with purpose.</p>
+          <br>
+          <p>The system wasn't built for us, so we built our own. Every piece tells a story of rebellion, every drop is a transmission to those who understand.</p>
+        </div>
+        <img src="/all about lily chou-chou (2001).jpeg" alt="Underground" class="story-image">
+      </div>
+    </section>
+
+    <section class="values-section">
+      <h2 class="section-title">CORE PROTOCOLS</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon">⚫</div>
+          <h3>ANONYMITY</h3>
+          <p>We operate in the shadows. No names, no faces, just the code. Identity is a construct we reject.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🔒</div>
+          <h3>EXCLUSIVITY</h3>
+          <p>Limited access. Invitation-only drops. If you're here, you were meant to find us.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">⚡</div>
+          <h3>RESISTANCE</h3>
+          <p>Anti-system. Anti-authority. We don't follow trends — we create them for the underground.</p>
+        </div>
+       
+      </div>
+    </section>
+
+    <section class="team-section">
+      <h2 class="section-title">OPERATIVES</h2>
+      <div class="team-grid">
+        <div class="team-member">
+          <img src="ilu.jpeg" alt="Operative 01" class="team-photo">
+          <div class="team-info">
+            <h3>OPERATIVE 01</h3>
+            <p>Creative Director</p>
+          </div>
+        </div>
+        <div class="team-member">
+          <img src="ilu.jpeg" alt="Operative 02" class="team-photo">
+          <div class="team-info">
+            <h3>OPERATIVE 02</h3>
+            <p>Head of Design</p>
+          </div>
+        </div>
+        <div class="team-member">
+          <img src="ilu.jpeg" alt="Operative 03" class="team-photo">
+          <div class="team-info">
+            <h3>OPERATIVE 03</h3>
+            <p>Network Manager</p>
+          </div>
+        </div>
+        <div class="team-member">
+          <img src="ilu.jpeg" alt="Operative 04" class="team-photo">
+          <div class="team-info">
+            <h3>OPERATIVE 04</h3>
+            <p>Production Lead</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <h2 class="section-title">NETWORK STATISTICS</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <h2>10K+</h2>
+          <p>Operatives Worldwide</p>
+        </div>
+        <div class="stat-item">
+          <h2>50+</h2>
+          <p>Drops Executed</p>
+        </div>
+        <div class="stat-item">
+          <h2>30</h2>
+          <p>Countries Infiltrated</p>
+        </div>
+        <div class="stat-item">
+          <h2>4.9★</h2>
+          <p>Operative Rating</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    // Update cart count on page load
+    updateCartCount();
+  </script>
+</body>
+</html> 

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SECT07 - Inventory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Space Mono', monospace;
+      background-color: #000000;
+      color: #ffffff;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #333;
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 400;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    nav a:hover {
+      color: #ff0000;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #ff0000;
+      transition: width 0.3s;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .cart-container {
+      padding-top: 100px;
+      min-height: 100vh;
+    }
+    .cart-header {
+      text-align: center;
+      padding: 60px 40px;
+      background: #111;
+    }
+    .cart-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 4rem;
+      color: #ff0000;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #ff0000;
+      letter-spacing: 5px;
+    }
+    .cart-subtitle {
+      font-size: 1.2rem;
+      color: #ccc;
+      font-family: 'Space Mono', monospace;
+    }
+    .cart-content {
+      padding: 60px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 60px;
+    }
+    .cart-items {
+      background: #111;
+      border-radius: 0;
+      padding: 40px;
+      border: 1px solid #333;
+    }
+    .cart-item {
+      display: grid;
+      grid-template-columns: 100px 1fr auto auto;
+      gap: 20px;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #333;
+    }
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    .item-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 0;
+      filter: grayscale(30%);
+    }
+    .item-details h3 {
+      font-family: 'Orbitron', monospace;
+      color: #ff0000;
+      margin-bottom: 8px;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    .item-details p {
+      color: #999;
+      font-size: 0.9rem;
+      font-family: 'Space Mono', monospace;
+    }
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .quantity-btn {
+      width: 30px;
+      height: 30px;
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      cursor: crosshair;
+      border-radius: 0;
+      font-weight: bold;
+      font-family: 'Space Mono', monospace;
+    }
+    .quantity-btn:hover {
+      background: #ff0000;
+      color: #000;
+      border-color: #ff0000;
+    }
+    .quantity-display {
+      min-width: 40px;
+      text-align: center;
+      font-weight: 600;
+      font-family: 'Space Mono', monospace;
+    }
+    .item-price {
+      font-size: 1.2rem;
+      color: #ff0000;
+      font-weight: 600;
+      font-family: 'Space Mono', monospace;
+    }
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #666;
+      cursor: crosshair;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+    .remove-btn:hover {
+      color: #ff0000;
+    }
+    .cart-summary {
+      background: #111;
+      border-radius: 0;
+      padding: 40px;
+      border: 1px solid #333;
+      height: fit-content;
+      position: sticky;
+      top: 120px;
+    }
+    .summary-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      color: #ff0000;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 10px 0;
+      font-family: 'Space Mono', monospace;
+    }
+    .summary-row.total {
+      border-top: 2px solid #333;
+      padding-top: 20px;
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #ff0000;
+    }
+    .checkout-btn {
+      width: 100%;
+      padding: 18px;
+      background: transparent;
+      border: 1px solid #ff0000;
+      color: #ff0000;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: crosshair;
+      border-radius: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      margin-top: 20px;
+      font-family: 'Space Mono', monospace;
+    }
+    .checkout-btn:hover {
+      background: #ff0000;
+      color: #000;
+    }
+    .checkout-btn:disabled {
+      background: #333;
+      border-color: #666;
+      color: #666;
+      cursor: not-allowed;
+    }
+    .empty-cart {
+      text-align: center;
+      padding: 80px 40px;
+    }
+    .empty-cart h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem;
+      color: #ff0000;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    .empty-cart p {
+      font-size: 1.2rem;
+      color: #999;
+      margin-bottom: 40px;
+      font-family: 'Space Mono', monospace;
+    }
+    .continue-shopping {
+      padding: 15px 40px;
+      background: transparent;
+      border: 1px solid #ff0000;
+      color: #ff0000;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: crosshair;
+      border-radius: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .continue-shopping:hover {
+      background: #ff0000;
+      color: #000;
+    }
+    .cart-count {
+      background: #ff0000;
+      color: #000;
+      border-radius: 0;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 5px;
+      font-family: 'Space Mono', monospace;
+    }
+    .promo-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #333;
+    }
+    .promo-input {
+      width: 100%;
+      padding: 12px;
+      background: #000;
+      border: 1px solid #333;
+      border-radius: 0;
+      color: #fff;
+      margin-bottom: 10px;
+      font-family: 'Space Mono', monospace;
+    }
+    .apply-promo {
+      width: 100%;
+      padding: 12px;
+      background: #333;
+      border: 1px solid #555;
+      color: #fff;
+      cursor: crosshair;
+      border-radius: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .apply-promo:hover {
+      background: #ff0000;
+      color: #000;
+      border-color: #ff0000;
+    }
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        padding: 10px 10px;
+      }
+      .logo {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      nav ul {
+        gap: 10px;
+      }
+      .cart-header {
+        padding: 30px 5vw;
+      }
+      .cart-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+      .cart-subtitle {
+        font-size: 1rem;
+      }
+      .cart-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 30px 5vw;
+      }
+      .cart-items {
+        padding: 12px;
+      }
+      .cart-item {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 10px 0;
+      }
+      .item-image {
+        width: 100%;
+        height: 120px;
+      }
+      .item-details h3 {
+        font-size: 1.1rem;
+      }
+      .item-details p {
+        font-size: 0.9rem;
+      }
+      .quantity-controls {
+        gap: 5px;
+      }
+      .quantity-btn, .remove-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+      }
+      .quantity-display {
+        min-width: 30px;
+        font-size: 1rem;
+      }
+      .promo-section {
+        margin-top: 20px;
+        padding-top: 20px;
+      }
+      .promo-input, .apply-promo {
+        font-size: 1rem;
+      }
+      .continue-shopping {
+        width: 100%;
+        font-size: 1rem;
+        padding: 12px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SECT07</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">ACCESS</a></li>
+        <li><a href="shop.html">DROPS</a></li>
+        <li><a href="about.html">PROTOCOL</a></li>
+        <li><a href="contact.html">TRANSMISSION</a></li>
+        <li><a href="cart.html">INVENTORY <span class="cart-count" id="cartCount">0</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="cart-container">
+    <section class="cart-header">
+      <h1 class="cart-title">INVENTORY</h1>
+      <p class="cart-subtitle">Review your acquisitions and proceed to extraction</p>
+    </section>
+
+    <div id="cartContent">
+      <!-- Cart content will be dynamically populated -->
+    </div>
+  </div>
+
+  <script>
+    function loadCart() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const cartContent = document.getElementById('cartContent');
+      
+      if (cart.length === 0) {
+        cartContent.innerHTML = `
+          <div class="empty-cart">
+            <h2>INVENTORY EMPTY</h2>
+            <p>No items acquired. Return to drops for acquisition.</p>
+            <a href="shop.html" class="continue-shopping">ACCESS DROPS</a>
+          </div>
+        `;
+        return;
+      }
+
+      // Group items by name and count quantities
+      const groupedItems = {};
+      cart.forEach(item => {
+        if (groupedItems[item.name]) {
+          groupedItems[item.name].quantity++;
+        } else {
+          groupedItems[item.name] = {
+            name: item.name,
+            price: item.price,
+            quantity: 1
+          };
+        }
+      });
+
+      const cartItems = Object.values(groupedItems);
+      let subtotal = 0;
+
+      const itemsHTML = cartItems.map(item => {
+        const itemTotal = item.price * item.quantity;
+        subtotal += itemTotal;
+        
+        return `
+          <div class="cart-item" data-name="${item.name}">
+            <img src="productimg/_ (15).jpeg" alt="${item.name}" class="item-image">
+            <div class="item-details">
+              <h3>${item.name}</h3>
+              <p>Underground acquisition</p>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="updateQuantity('${item.name}', -1)">-</button>
+              <span class="quantity-display">${item.quantity}</span>
+              <button class="quantity-btn" onclick="updateQuantity('${item.name}', 1)">+</button>
+            </div>
+            <div class="item-price">₹${itemTotal.toLocaleString()}</div>
+            <button class="remove-btn" onclick="removeItem('${item.name}')">×</button>
+          </div>
+        `;
+      }).join('');
+
+      const shipping = subtotal > 5000 ? 0 : 500;
+      const total = subtotal + shipping;
+
+      cartContent.innerHTML = `
+        <div class="cart-content">
+          <div class="cart-items">
+            ${itemsHTML}
+          </div>
+          <div class="cart-summary">
+            <h2 class="summary-title">EXTRACTION SUMMARY</h2>
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>₹${subtotal.toLocaleString()}</span>
+            </div>
+            <div class="summary-row">
+              <span>Transmission</span>
+              <span>${shipping === 0 ? 'FREE' : '₹' + shipping.toLocaleString()}</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span>₹${total.toLocaleString()}</span>
+            </div>
+            <div class="promo-section">
+              <input type="text" class="promo-input" placeholder="ENTER ACCESS CODE">
+              <button class="apply-promo" onclick="applyPromo()">APPLY</button>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">PROCEED TO EXTRACTION</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateQuantity(itemName, change) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      
+      if (change > 0) {
+        // Add item
+        const item = cart.find(item => item.name === itemName);
+        if (item) {
+          cart.push({ name: itemName, price: item.price });
+        }
+      } else {
+        // Remove one instance of item
+        const index = cart.findIndex(item => item.name === itemName);
+        if (index !== -1) {
+          cart.splice(index, 1);
+        }
+      }
+      
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+      updateCartCount();
+    }
+
+    function removeItem(itemName) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart = cart.filter(item => item.name !== itemName);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+      updateCartCount();
+    }
+
+    function applyPromo() {
+      const promoInput = document.querySelector('.promo-input');
+      const promoCode = promoInput.value.toUpperCase();
+      
+      if (promoCode === 'SECT10') {
+        alert('ACCESS CODE ACCEPTED. 10% DISCOUNT APPLIED.');
+        promoInput.value = '';
+      } else {
+        alert('INVALID ACCESS CODE. TRY SECT10 FOR 10% DISCOUNT.');
+      }
+    }
+
+    function checkout() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      if (cart.length === 0) {
+        alert('INVENTORY EMPTY. NO ITEMS TO EXTRACT.');
+        return;
+      }
+      
+      alert('EXTRACTION PROTOCOL INITIATED. REDIRECTING TO SECURE PAYMENT GATEWAY.');
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    // Load cart on page load
+    loadCart();
+    updateCartCount();
+  </script>
+</body>
+</html> 

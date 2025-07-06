@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SECT07 - Transmission</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Space Mono', monospace;
+      background-color: #000000;
+      color: #ffffff;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #333;
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 400;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    nav a:hover {
+      color: #ff0000;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #ff0000;
+      transition: width 0.3s;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .contact-container {
+      padding-top: 100px;
+      min-height: 100vh;
+    }
+    .hero-section {
+      height: 50vh;
+      /* background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assests/_ (16).jpeg'); */
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: -1;
+    }
+    .hero-content h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 4rem;
+      color: #ff0000;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #ff0000;
+      letter-spacing: 5px;
+    }
+    .hero-content p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.8;
+      color: #ccc;
+      font-family: 'Space Mono', monospace;
+    }
+    .contact-content {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .contact-form {
+      background: #111;
+      padding: 40px;
+      border-radius: 0;
+      border: 1px solid #333;
+    }
+    .form-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      color: #ff0000;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    .form-group {
+      margin-bottom: 25px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #ccc;
+      font-family: 'Space Mono', monospace;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 15px;
+      background: #000;
+      border: 1px solid #333;
+      border-radius: 0;
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #ff0000;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: transparent;
+      border: 1px solid #ff0000;
+      color: #ff0000;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: crosshair;
+      border-radius: 0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .submit-btn:hover {
+      background: #ff0000;
+      color: #000;
+    }
+    .contact-info {
+      padding: 40px;
+    }
+    .info-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      color: #ff0000;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    .info-item {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #111;
+      border-radius: 0;
+      border: 1px solid #333;
+    }
+    .info-item h3 {
+      font-family: 'Orbitron', monospace;
+      color: #ff0000;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    .info-item p {
+      color: #ccc;
+      line-height: 1.6;
+      font-family: 'Space Mono', monospace;
+    }
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .social-link {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      background: #ff0000;
+      color: #000;
+      text-decoration: none;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transition: transform 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .social-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 0, 0, 0.5);
+    }
+    .faq-section {
+      padding: 80px 40px;
+      background: #111;
+    }
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .faq-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem;
+      color: #ff0000;
+      text-align: center;
+      margin-bottom: 60px;
+      text-shadow: 0 0 10px #ff0000;
+      letter-spacing: 3px;
+    }
+    .faq-item {
+      margin-bottom: 20px;
+      background: #000;
+      border-radius: 0;
+      overflow: hidden;
+      border: 1px solid #333;
+    }
+    .faq-question {
+      padding: 20px;
+      background: #111;
+      cursor: crosshair;
+      font-weight: 600;
+      color: #ff0000;
+      transition: background 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .faq-question:hover {
+      background: #333;
+    }
+    .faq-answer {
+      padding: 20px;
+      color: #ccc;
+      line-height: 1.6;
+      display: none;
+      font-family: 'Space Mono', monospace;
+    }
+    .faq-answer.active {
+      display: block;
+    }
+    .cart-count {
+      background: #ff0000;
+      color: #000;
+      border-radius: 0;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 5px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        padding: 10px 10px;
+      }
+      .logo {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      nav ul {
+        gap: 10px;
+      }
+      .contact-container {
+        padding-top: 60px;
+      }
+      .hero-section {
+        height: 30vh;
+        min-height: 120px;
+      }
+      .hero-content h1 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+      .hero-content p {
+        font-size: 0.95rem;
+        margin: 10px 0 20px;
+        max-width: 95vw;
+      }
+      .contact-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 30px 5vw;
+      }
+      .contact-form, .contact-info {
+        padding: 12px;
+      }
+      .form-title, .info-title {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      .faq-section {
+        padding: 30px 5vw;
+      }
+      .faq-title {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+      .faq-container {
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SECT07</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">ACCESS</a></li>
+        <li><a href="shop.html">DROPS</a></li>
+        <li><a href="about.html">PROTOCOL</a></li>
+        <li><a href="contact.html">TRANSMISSION</a></li>
+        <li><a href="cart.html">INVENTORY <span class="cart-count" id="cartCount">0</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="contact-container">
+    <section class="hero-section">
+      <video class="hero-video" autoplay muted loop playsinline>
+        <source src="e4ac286094b2356074953fe0a38c8ce4_720w.mp4" type="video/mp4">
+      </video>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1>TRANSMISSION</h1>
+        <p>Establish secure communication with the sect. Encrypted channels only.</p>
+      </div>
+    </section>
+
+    <section class="contact-content">
+      <div class="contact-form">
+        <h2 class="form-title">ENCRYPTED MESSAGE</h2>
+        <form onsubmit="submitForm(event)">
+          <div class="form-group">
+            <label for="name">OPERATIVE ID</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">FREQUENCY</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="subject">MESSAGE TYPE</label>
+            <select id="subject" name="subject" required>
+              <option value="">SELECT PROTOCOL</option>
+              <option value="general">GENERAL INQUIRY</option>
+              <option value="order">ORDER SUPPORT</option>
+              <option value="returns">RETURN PROTOCOL</option>
+              <option value="collaboration">COLLABORATION REQUEST</option>
+              <option value="press">PRESS & MEDIA</option>
+              <option value="other">OTHER</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">TRANSMISSION</label>
+            <textarea id="message" name="message" placeholder="ENTER YOUR MESSAGE..." required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">TRANSMIT</button>
+        </form>
+      </div>
+
+      <div class="contact-info">
+        <h2 class="info-title">SECURE CHANNELS</h2>
+        
+        <div class="info-item">
+          <h3>📍 LOCATION</h3>
+          <p>SECT07 HQ<br>
+          COORDS: 51.5074° N, 0.1278° W<br>
+          London, UK</p>
+        </div>
+
+        <div class="info-item">
+          <h3>📧 FREQUENCIES</h3>
+          <p>hello@sect07.com<br>
+          support@sect07.com</p>
+        </div>
+
+        <div class="info-item">
+          <h3>📞 SECURE LINE</h3>
+          <p>+44 (0) 20 1234 5678<br>
+          Mon-Fri: 9AM-6PM GMT</p>
+        </div>
+
+        <div class="info-item">
+          <h3>🌐 NETWORK</h3>
+          <p>Join the underground network</p>
+          <div class="social-links">
+            <a href="#" class="social-link">DC</a>
+            <a href="#" class="social-link">TG</a>
+            <a href="#" class="social-link">SG</a>
+            <a href="#" class="social-link">MX</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section">
+      <div class="faq-container">
+        <h2 class="faq-title">FREQUENTLY ASKED PROTOCOLS</h2>
+        
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How do I track my transmission?
+          </div>
+          <div class="faq-answer">
+            Once your order is transmitted, you'll receive encrypted tracking coordinates via secure frequency. Access your transmission status through the operative dashboard.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            What's the return protocol?
+          </div>
+          <div class="faq-answer">
+            We accept returns within 30 days of transmission. Items must be unworn, unwashed, and in original packaging. Return shipping is free for orders over ₹5,000.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            When do you execute new drops?
+          </div>
+          <div class="faq-answer">
+            New drops are executed every Friday at 6 PM GMT. Follow our secure channels for announcements and encrypted previews.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            Do you transmit internationally?
+          </div>
+          <div class="faq-answer">
+            Affirmative. We transmit to over 50 countries worldwide. Transmission costs and delivery protocols vary by location.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFAQ(this)">
+            How can I join the sect network?
+          </div>
+          <div class="faq-answer">
+            Join our Discord server, follow our secure channels, and subscribe to our encrypted newsletter to stay connected with the sect network.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function submitForm(event) {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData);
+      
+      // Simulate form submission
+      alert('TRANSMISSION SUCCESSFUL. MESSAGE ENCRYPTED AND SENT.');
+      event.target.reset();
+    }
+
+    function toggleFAQ(element) {
+      const answer = element.nextElementSibling;
+      const isActive = answer.classList.contains('active');
+      
+      // Close all other FAQ answers
+      document.querySelectorAll('.faq-answer').forEach(ans => {
+        ans.classList.remove('active');
+      });
+      
+      // Toggle current answer
+      if (!isActive) {
+        answer.classList.add('active');
+      }
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    // Update cart count on page load
+    updateCartCount();
+  </script>
+</body>
+</html> 

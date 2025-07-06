@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SECT07 - Access Denied</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Space Mono', monospace;
+      background-color: #000000;
+      color: #ffffff;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+    
+    @keyframes glitch {
+      0%, 90%, 100% {
+        text-shadow: 0 0 20px #ff0000;
+        transform: translate(0);
+      }
+      10% {
+        text-shadow: 0 0 20px #ff0000, 2px 0 0 #ff0000;
+        transform: translate(-1px, 0);
+      }
+      20% {
+        text-shadow: 0 0 20px #ff0000, -2px 0 0 #ff0000;
+        transform: translate(1px, 0);
+      }
+      30% {
+        text-shadow: 0 0 20px #ff0000, 1px 0 0 #ff0000;
+        transform: translate(0);
+      }
+      40% {
+        text-shadow: 0 0 20px #ff0000, -1px 0 0 #ff0000;
+        transform: translate(0);
+      }
+      50% {
+        text-shadow: 0 0 20px #ff0000;
+        transform: translate(0);
+      }
+      60% {
+        text-shadow: 0 0 20px #ff0000, 1px 0 0 #ff0000;
+        transform: translate(-1px, 0);
+      }
+      70% {
+        text-shadow: 0 0 20px #ff0000, -1px 0 0 #ff0000;
+        transform: translate(1px, 0);
+      }
+      80% {
+        text-shadow: 0 0 20px #ff0000;
+        transform: translate(0);
+      }
+    }
+    .scan-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff0000, transparent);
+      animation: scan 3s linear infinite;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #333;
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 400;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    nav a:hover {
+      color: #ff0000;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #ff0000;
+      transition: width 0.3s;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .hero {
+      height: 100vh;
+      /* background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('assests/_ (16).jpeg'); */
+      /* background-size: cover; */
+      /* background-position: center; */
+      /* background-attachment: fixed; */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      padding-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: -1;
+    }
+    .hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 3rem;
+      color: #ff0000;
+      text-shadow: 0 0 20px #ff0000;
+      margin-bottom: 20px;
+      letter-spacing: 5px;
+      animation: glitch 3s infinite;
+      position: relative;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      margin: 20px 0 40px;
+      max-width: 600px;
+      line-height: 1.8;
+      color: #ccc;
+      font-family: 'Space Mono', monospace;
+    }
+    .hero button {
+      padding: 18px 50px;
+      background: transparent;
+      border: 2px solid #ff0000;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: crosshair;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #ff0000;
+      font-family: 'Space Mono', monospace;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero button:hover {
+      background: #ff0000;
+      color: #000;
+      box-shadow: 0 0 20px #ff0000;
+    }
+    .hero button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    .hero button:hover::before {
+      left: 100%;
+    }
+    .coordinates {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .drop-info {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      color: #ff0000;
+    }
+    .featured-section {
+      padding: 80px 40px;
+      background: #111;
+    }
+    .section-title {
+      text-align: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem;
+      margin-bottom: 60px;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+      letter-spacing: 3px;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .product {
+      background: #000;
+      border-radius: 0;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid #333;
+      position: relative;
+    }
+    .product:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+    }
+    .product img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      filter: grayscale(50%);
+    }
+    .product-info {
+      padding: 25px;
+    }
+    .product h3 {
+      font-family: 'Orbitron', monospace;
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+      color: #ff0000;
+    }
+    .product p {
+      font-size: 1rem;
+      color: #ccc;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .product button {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid #ff0000;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: crosshair;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #ff0000;
+      font-family: 'Space Mono', monospace;
+    }
+    .product button:hover {
+      background: #ff0000;
+      color: #000;
+    }
+    .newsletter {
+      padding: 80px 40px;
+      background: #000;
+      text-align: center;
+      border-top: 1px solid #333;
+    }
+    .newsletter h2 {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    .newsletter p {
+      font-size: 1rem;
+      margin-bottom: 40px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #ccc;
+    }
+    .newsletter-form {
+      display: flex;
+      max-width: 500px;
+      margin: 0 auto;
+      gap: 10px;
+    }
+    .newsletter-form input {
+      flex: 1;
+      padding: 15px;
+      border: 1px solid #333;
+      background: #111;
+      color: #fff;
+      border-radius: 0;
+      font-family: 'Space Mono', monospace;
+    }
+    .newsletter-form button {
+      padding: 15px 30px;
+      background: transparent;
+      border: 1px solid #ff0000;
+      font-weight: 600;
+      cursor: crosshair;
+      color: #ff0000;
+      border-radius: 0;
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .newsletter-form button:hover {
+      background: #ff0000;
+      color: #000;
+    }
+    footer {
+      padding: 60px 40px 40px;
+      background: #000;
+      text-align: center;
+      border-top: 1px solid #333;
+    }
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+    }
+    .footer-section h3 {
+      font-family: 'Orbitron', monospace;
+      color: #ff0000;
+      margin-bottom: 20px;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    .footer-section p, .footer-section a {
+      color: #666;
+      text-decoration: none;
+      line-height: 1.6;
+      font-family: 'Space Mono', monospace;
+    }
+    .footer-section a:hover {
+      color: #ff0000;
+    }
+    .footer-bottom {
+      border-top: 1px solid #333;
+      padding-top: 20px;
+      color: #666;
+      font-size: 0.8rem;
+      font-family: 'Space Mono', monospace;
+    }
+    .cart-count {
+      background: #ff0000;
+      color: #000;
+      border-radius: 0;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 5px;
+      font-family: 'Space Mono', monospace;
+    }
+    .terminal-intro {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      font-family: 'Space Mono', monospace;
+      color: #ff0000;
+    }
+    
+    .hack-transition {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      z-index: 9999;
+      display: none;
+      font-family: 'Space Mono', monospace;
+      color: z#ff3fe9;
+      overflow: hidden;
+    }
+    
+    .hack-text {
+      position: absolute;
+      color: #ff0000;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+    
+
+    
+    .glitch-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 255, 0, 0.1);
+      z-index: 9998;
+      display: none;
+      pointer-events: none;
+    }
+    
+    .glitch-overlay::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 0, 0.1) 2px,
+        rgba(0, 255, 0, 0.1) 4px
+      );
+      animation: glitchScan 0.1s linear infinite;
+    }
+    
+    @keyframes glitchScan {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(4px); }
+    }
+    .terminal-text {
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+    .terminal-text span {
+      opacity: 0;
+      animation: typewriter 0.1s forwards;
+    }
+    @keyframes typewriter {
+      to { opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        padding: 10px 10px;
+      }
+      .logo {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      nav ul {
+        gap: 10px;
+      }
+      .hero {
+        padding-top: 60px;
+        min-height: 70vh;
+      }
+      .hero h1 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+      .hero p {
+        font-size: 0.95rem;
+        margin: 10px 0 20px;
+        max-width: 95vw;
+      }
+      .hero button {
+        width: 100%;
+        padding: 14px 0;
+        font-size: 1rem;
+      }
+      .coordinates, .drop-info {
+        font-size: 0.7rem;
+        right: 10px;
+        left: 10px;
+      }
+      .featured-section {
+        padding: 30px 5vw;
+      }
+      .section-title {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+      }
+      .products {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .product img {
+        height: 180px;
+      }
+      .product-info {
+        padding: 12px;
+      }
+      .newsletter {
+        padding: 30px 5vw;
+      }
+      .newsletter-form {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .newsletter-form input, .newsletter-form button {
+        width: 100%;
+        font-size: 1rem;
+      }
+      footer {
+        padding: 30px 5vw 20px;
+      }
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scan-line"></div>
+  
+  <div class="terminal-intro" id="terminalIntro">
+    <div class="terminal-text">
+      <div>ACCESSING SECT07...</div>
+      <div>VERIFYING CREDENTIALS...</div>
+      <div>ACCESS GRANTED.</div>
+      <div>WELCOME TO THE SECT.</div>
+    </div>
+  </div>
+  
+  <div class="hack-transition" id="hackTransition">
+    <div class="hack-text">
+      <div>BREACHING SECURITY PROTOCOLS...</div>
+      <div>OVERRIDING ACCESS CONTROLS...</div>
+      <div>BYPASSING FIREWALL...</div>
+      <div>EXTRACTING DATA...</div>
+      <div>HACK SUCCESSFUL.</div>
+    </div>
+  </div>
+  
+  <div class="glitch-overlay" id="glitchOverlay"></div>
+
+  <header>
+    <div class="logo">SECT07</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">ACCESS</a></li>
+        <li><a href="shop.html">DROPS</a></li>
+        <li><a href="about.html">PROTOCOL</a></li>
+        <li><a href="contact.html">TRANSMISSION</a></li>
+        <li><a href="cart.html">INVENTORY <span class="cart-count" id="cartCount">0</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="e4ac286094b2356074953fe0a38c8ce4_720w.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="coordinates">COORDS: 51.5074° N, 0.1278° W</div>
+    <h1>YOU WEREN'T MEANT TO FIND US</h1>
+    <p>SECT07 isn't fashion — it's survival. A code passed through the underground, stitched in secrecy, worn with purpose.</p>
+    <p>The system wasn't built for us — so we built our own.</p>
+    <button onclick="window.location.href='shop.html'">ENTER THE SECT</button>
+    <div class="drop-info">DROP: 07.13.25 | INITIATION PHASE</div>
+  </section>
+
+  <section class="featured-section">
+    <h2 class="section-title">INITIATION DROPS</h2>
+    <div class="products">
+      <div class="product">
+        <img src="(15).jpeg" alt="Oversized Tee" />
+        <div class="product-info">
+          <h3>sexual fantasies track</h3>
+          <p>₹4,999</p>
+          <button onclick="addToCart('Oversized Tee', 4999)">ADD TO INVENTORY</button>
+        </div>
+      </div>
+      <div class="product">
+        <img src="(18).jpeg" alt="Cargo Pants" />
+        <div class="product-info">
+          <h3>sex vest</h3>
+          <p>₹6,999</p>
+          <button onclick="addToCart('Cargo Pants', 6999)">ADD TO INVENTORY</button>
+        </div>
+      </div>
+      <div class="product">
+        <img src="@pleasures x @evangelion_official Trucker Hat.jpeg" alt="Cap" />
+        <div class="product-info">
+          <h3>CAP</h3>
+          <p>₹2,499</p>
+          <button onclick="addToCart('Cap', 2499)">ADD TO INVENTORY</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="newsletter">
+    <h2>TRANSMISSION FREQUENCY</h2>
+    <p>Join the underground network. Receive encrypted updates on new drops and sect activities.</p>
+    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+      <input type="email" placeholder="ENTER FREQUENCY" required>
+      <button type="submit">TRANSMIT</button>
+    </form>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>SECT07</h3>
+        <p>Underground fashion collective. Anti-system. Anti-authority. You weren't supposed to wear this.</p>
+      </div>
+      <div class="footer-section">
+        <h3>ACCESS POINTS</h3>
+        <p><a href="shop.html">Drops</a></p>
+        <p><a href="about.html">Protocol</a></p>
+        <p><a href="contact.html">Transmission</a></p>
+        <p><a href="cart.html">Inventory</a></p>
+      </div>
+      <div class="footer-section">
+        <h3>SUPPORT</h3>
+        <p><a href="#">Encryption Guide</a></p>
+        <p><a href="#">Return Protocol</a></p>
+        <p><a href="#">Size Matrix</a></p>
+        <p><a href="#">FAQ</a></p>
+      </div>
+      <div class="footer-section">
+        <h3>NETWORK</h3>
+        <p><a href="#">Discord</a></p>
+        <p><a href="#">Telegram</a></p>
+        <p><a href="#">Signal</a></p>
+        <p><a href="#">Matrix</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2025 SECT07. ACCESS DENIED TO UNAUTHORIZED PERSONNEL.
+    </div>
+  </footer>
+
+  <script>
+    // Terminal intro animation
+    setTimeout(() => {
+      document.getElementById('terminalIntro').style.display = 'none';
+      startHackTransition();
+    }, 3000);
+    
+    function startHackTransition() {
+      const hackTransition = document.getElementById('hackTransition');
+      const glitchOverlay = document.getElementById('glitchOverlay');
+      const hackText = document.querySelector('.hack-text');
+      
+      // Show hack transition
+      hackTransition.style.display = 'block';
+      glitchOverlay.style.display = 'block';
+      
+      // Type out hack messages quickly for 2-second transition
+      const messages = [
+  'CHECKING DROP CREDENTIALS...',
+  'VERIFYING MEMBER ID...',
+  'CONNECTION APPROVED. ENTER SECT07.'
+];
+
+      let currentMessage = 0;
+      let currentChar = 0;
+      
+      function typeMessage() {
+        if (currentMessage < messages.length) {
+          if (currentChar < messages[currentMessage].length) {
+            hackText.innerHTML = messages[currentMessage].substring(0, currentChar + 1) + '|';
+            currentChar++;
+            setTimeout(typeMessage, 20); // Faster typing
+          } else {
+            hackText.innerHTML = messages[currentMessage];
+            currentMessage++;
+            currentChar = 0;
+            setTimeout(typeMessage, 200); // Shorter delay between messages
+          }
+        } else {
+          // End transition after 2 seconds total
+          setTimeout(() => {
+            hackTransition.style.display = 'none';
+            glitchOverlay.style.display = 'none';
+          }, 200);
+        }
+      }
+      
+      typeMessage();
+    }
+
+    function addToCart(productName, price) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.push({ name: productName, price });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      alert('ITEM ADDED TO INVENTORY: ' + productName);
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    function subscribeNewsletter(event) {
+      event.preventDefault();
+      const email = event.target.querySelector('input').value;
+      alert('TRANSMISSION SUCCESSFUL. WELCOME TO THE NETWORK.');
+      event.target.reset();
+    }
+
+    // Update cart count on page load
+    updateCartCount();
+  </script>
+</body>
+</html> 

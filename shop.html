@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SECT07 - Drops</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Space Mono', monospace;
+      background-color: #000000;
+      color: #ffffff;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #333;
+    }
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 400;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+    }
+    nav a:hover {
+      color: #ff0000;
+      text-shadow: 0 0 5px #ff0000;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #ff0000;
+      transition: width 0.3s;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .shop-container {
+      padding-top: 100px;
+      min-height: 100vh;
+    }
+    .shop-header {
+      text-align: center;
+      padding: 60px 40px;
+      background: #111;
+    }
+    .shop-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 4rem;
+      color: #ff0000;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px #ff0000;
+      letter-spacing: 5px;
+    }
+    .shop-subtitle {
+      font-size: 1.2rem;
+      color: #ccc;
+      max-width: 600px;
+      margin: 0 auto;
+      font-family: 'Space Mono', monospace;
+    }
+    .filters {
+      padding: 40px;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #333;
+    }
+    .filter-btn {
+      padding: 12px 24px;
+      background: #111;
+      border: 1px solid #333;
+      color: #fff;
+      cursor: crosshair;
+      border-radius: 0;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      font-family: 'Space Mono', monospace;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: #ff0000;
+      color: #000;
+      border-color: #ff0000;
+    }
+    .products-grid {
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .product-card {
+      background: #000;
+      border-radius: 0;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid #333;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+    }
+    .product-image {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      filter: grayscale(30%);
+    }
+    .product-details {
+      padding: 25px;
+    }
+    .product-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: #ff0000;
+    }
+    .product-category {
+      color: #666;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      font-family: 'Space Mono', monospace;
+    }
+    .product-price {
+      font-size: 1.2rem;
+      color: #ccc;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .product-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .add-to-cart {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid #ff0000;
+      color: #ff0000;
+      font-weight: 600;
+      cursor: crosshair;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .add-to-cart:hover {
+      background: #ff0000;
+      color: #000;
+    }
+    .quick-view {
+      padding: 12px 20px;
+      background: transparent;
+      border: 1px solid #333;
+      color: #ccc;
+      cursor: crosshair;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s;
+      font-family: 'Space Mono', monospace;
+    }
+    .quick-view:hover {
+      background: #333;
+      color: #fff;
+    }
+    .size-selector {
+      margin-bottom: 15px;
+    }
+    .size-selector select {
+      width: 100%;
+      padding: 10px;
+      background: #111;
+      border: 1px solid #333;
+      color: #fff;
+      border-radius: 0;
+      font-family: 'Space Mono', monospace;
+    }
+    .cart-count {
+      background: #ff0000;
+      color: #000;
+      border-radius: 0;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      margin-left: 5px;
+      font-family: 'Space Mono', monospace;
+    }
+    .sold-out {
+      background: #333 !important;
+      border-color: #666 !important;
+      color: #666 !important;
+      cursor: not-allowed !important;
+    }
+    .sold-out:hover {
+      background: #333 !important;
+      color: #666 !important;
+    }
+    .drop-phase {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff0000;
+      color: #000;
+      padding: 5px 10px;
+      font-size: 0.7rem;
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        padding: 10px 10px;
+      }
+      .logo {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      nav ul {
+        gap: 10px;
+      }
+      .shop-header {
+        padding: 30px 5vw;
+      }
+      .shop-title {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+      }
+      .shop-subtitle {
+        font-size: 1rem;
+      }
+      .filters {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px 5vw;
+      }
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 30px 5vw;
+      }
+      .product-image {
+        height: 180px;
+      }
+      .product-details {
+        padding: 12px;
+      }
+      .add-to-cart, .quick-view {
+        width: 100%;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">SECT07</div>
+    <nav>
+      <ul>
+        <li><a href="index.html">ACCESS</a></li>
+        <li><a href="shop.html">DROPS</a></li>
+        <li><a href="about.html">PROTOCOL</a></li>
+        <li><a href="contact.html">TRANSMISSION</a></li>
+        <li><a href="cart.html">INVENTORY <span class="cart-count" id="cartCount">0</span></a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="shop-container">
+    <section class="shop-header">
+      <h1 class="shop-title">DROPS</h1>
+      <p class="shop-subtitle">Limited access. Underground distribution. You weren't supposed to wear this.</p>
+    </section>
+
+    <section class="filters">
+      <button class="filter-btn active" onclick="filterProducts('all')">ALL PHASES</button>
+      <button class="filter-btn" onclick="filterProducts('initiation')">INITIATION</button>
+      <button class="filter-btn" onclick="filterProducts('ghost')">GHOST PROTOCOL</button>
+      <button class="filter-btn" onclick="filterProducts('civilian')">CIVILIAN REJECTS</button>
+      <button class="filter-btn" onclick="filterProducts('transmission')">TRANSMISSION LOST</button>
+    </section>
+
+    <section class="products-grid" id="productsGrid">
+      <!-- Initiation Phase -->
+      <div class="product-card" data-category="initiation">
+        <div class="drop-phase">INITIATION</div>
+        <img src="(98).jpeg" alt="Oversized Tee" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">OVERSIZED TEE</h3>
+          <p class="product-category">Initiation Phase</p>
+          <p class="product-price">₹4,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Oversized Tee', 4999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Oversized Tee')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="initiation">
+        <div class="drop-phase">INITIATION</div>
+        <img src="(99).png" alt="Cargo Pants" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">CARGO PANTS</h3>
+          <p class="product-category">Initiation Phase</p>
+          <p class="product-price">₹6,999</p>
+          <div class="size-selector">
+            <select>
+              <option>30</option>
+              <option>32</option>
+              <option>34</option>
+              <option>36</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Cargo Pants', 6999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Cargo Pants')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="initiation">
+        <div class="drop-phase">INITIATION</div>
+        <img src="@pleasures x @evangelion_official Trucker Hat.jpeg" alt="Cap" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">CAP</h3>
+          <p class="product-category">Initiation Phase</p>
+          <p class="product-price">₹2,499</p>
+          <div class="size-selector">
+            <select>
+              <option>ONE SIZE</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Cap', 2499)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Cap')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ghost Protocol -->
+      <div class="product-card" data-category="ghost">
+        <div class="drop-phase">GHOST</div>
+        <img src="(26).jpeg" alt="Tech Hoodie" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">TECH HOODIE</h3>
+          <p class="product-category">Ghost Protocol</p>
+          <p class="product-price">₹8,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Tech Hoodie', 8999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Tech Hoodie')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="ghost">
+        <div class="drop-phase">GHOST</div>
+        <img src="(27).jpeg" alt="Balaclava" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">BALACLAVA</h3>
+          <p class="product-category">Ghost Protocol</p>
+          <p class="product-price">₹1,999</p>
+          <div class="size-selector">
+            <select>
+              <option>ONE SIZE</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Balaclava', 1999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Balaclava')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="ghost">
+        <div class="drop-phase">GHOST</div>
+        <img src="pixelated jersey.jpeg" alt="Face Mask" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">FACE MASK</h3>
+          <p class="product-category">Ghost Protocol</p>
+          <p class="product-price">₹1,499</p>
+          <div class="size-selector">
+            <select>
+              <option>ONE SIZE</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart sold-out" onclick="addToCart('Face Mask', 1499)" disabled>SOLD OUT</button>
+            <button class="quick-view" onclick="quickView('Face Mask')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Civilian Rejects -->
+      <div class="product-card" data-category="civilian">
+        <div class="drop-phase">CIVILIAN</div>
+        <img src="(24).jpeg" alt="Washed Knit" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">WASHED KNIT</h3>
+          <p class="product-category">Civilian Rejects</p>
+          <p class="product-price">₹5,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Washed Knit', 5999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Washed Knit')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="civilian">
+        <div class="drop-phase">CIVILIAN</div>
+        <img src="(25).jpeg" alt="Void Tee" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">VOID TEE</h3>
+          <p class="product-category">Civilian Rejects</p>
+          <p class="product-price">₹3,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Void Tee', 3999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Void Tee')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="civilian">
+        <div class="drop-phase">CIVILIAN</div>
+        <img src="(23).jpeg" alt="Unidentified Pants" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">UNIDENTIFIED PANTS</h3>
+          <p class="product-category">Civilian Rejects</p>
+          <p class="product-price">₹4,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Unidentified Pants', 4999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Unidentified Pants')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transmission Lost -->
+      <div class="product-card" data-category="transmission">
+        <div class="drop-phase">TRANSMISSION</div>
+        <img src="(22).jpeg" alt="Distorted Print" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">DISTORTED PRINT</h3>
+          <p class="product-category">Transmission Lost</p>
+          <p class="product-price">₹7,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Distorted Print', 7999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Distorted Print')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="transmission">
+        <div class="drop-phase">TRANSMISSION</div>
+        <img src="(15).jpeg" alt="Reactive Fabric" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">REACTIVE FABRIC</h3>
+          <p class="product-category">Transmission Lost</p>
+          <p class="product-price">₹9,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Reactive Fabric', 9999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Reactive Fabric')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="transmission">
+        <div class="drop-phase">TRANSMISSION</div>
+        <img src="(20).jpeg" alt="Hidden Message" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">HIDDEN MESSAGE</h3>
+          <p class="product-category">Transmission Lost</p>
+          <p class="product-price">₹6,499</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Hidden Message', 6499)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Hidden Message')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="transmission">
+        <div class="drop-phase">TRANSMISSION</div>
+        <img src="(21).jpeg" alt="Digital Corruption" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">DIGITAL CORRUPTION</h3>
+          <p class="product-category">Transmission Lost</p>
+          <p class="product-price">₹7,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Digital Corruption', 7999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Digital Corruption')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-card" data-category="ghost">
+        <div class="drop-phase">GHOST</div>
+        <img src="(19).jpeg" alt="Pixelated Jersey" class="product-image">
+        <div class="product-details">
+          <h3 class="product-name">PIXELATED JERSEY</h3>
+          <p class="product-category">Ghost Protocol</p>
+          <p class="product-price">₹5,999</p>
+          <div class="size-selector">
+            <select>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+          <div class="product-actions">
+            <button class="add-to-cart" onclick="addToCart('Pixelated Jersey', 5999)">ADD TO INVENTORY</button>
+            <button class="quick-view" onclick="quickView('Pixelated Jersey')">QUICK VIEW</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function filterProducts(category) {
+      const products = document.querySelectorAll('.product-card');
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      
+      // Update active button
+      filterBtns.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Filter products
+      products.forEach(product => {
+        if (category === 'all' || product.dataset.category === category) {
+          product.style.display = 'block';
+        } else {
+          product.style.display = 'none';
+        }
+      });
+    }
+
+    function addToCart(productName, price) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.push({ name: productName, price });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      alert('ITEM ADDED TO INVENTORY: ' + productName);
+    }
+
+    function quickView(productName) {
+      alert('QUICK VIEW PROTOCOL: ' + productName + ' - ACCESS DENIED');
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    // Update cart count on page load
+    updateCartCount();
+  </script>
+</body>
+</html> 
